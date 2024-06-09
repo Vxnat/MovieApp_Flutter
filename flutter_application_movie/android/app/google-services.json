@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1006859607577",
+    "project_id": "upload-img-4bde9",
+    "storage_bucket": "upload-img-4bde9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006859607577:android:a50cb84cf14e27e2419488",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_movie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUg_ChXDbhMUUWNK_gAGtSZ_TPuBNJa_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006859607577:android:26d9ce2f70bd4a71419488",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_upload_images"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUg_ChXDbhMUUWNK_gAGtSZ_TPuBNJa_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
