@@ -7,6 +7,17 @@ import 'package:flutter_application_movie/models/movie_item.dart';
 import 'package:flutter_application_movie/models/movie_item_detail.dart';
 import 'package:http/http.dart' as http;
 
+enum TypeOfFilm {
+  tv,
+  movie,
+  anime,
+  currentYear,
+  trailer,
+  horrible,
+  family,
+  funny
+}
+
 class MovieProvider extends ChangeNotifier {
   static final MovieProvider _instance = MovieProvider._();
   factory MovieProvider() => _instance;
@@ -14,6 +25,8 @@ class MovieProvider extends ChangeNotifier {
   AuthService authService = AuthService();
   bool isMovieFavorite = false;
   List<MovieItemDetail> listNameMovie = [];
+  int currentSelectedIndex = -1;
+  String currentUrlMovie = '';
   void login(String email, password) {
     authService.login(email, password);
   }
@@ -35,9 +48,25 @@ class MovieProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getNameMovieFromApi() async {
-    listNameMovie.clear();
-    listNameMovie = await Apis.getAllNameMovie();
+  void toggleColor(int index) {
+    if (currentSelectedIndex == index) {
+      // Nếu mục hiện tại đã được chọn, bỏ chọn nó
+      currentSelectedIndex = -1;
+      currentUrlMovie = '';
+    } else {
+      // Chọn mục hiện tại
+      currentSelectedIndex = index;
+    }
+    notifyListeners();
+  }
+
+  void setCurrentUrlMovie(String newUrlMovie, String trailerUrl) {
+    if (newUrlMovie != '') {
+      currentUrlMovie = newUrlMovie;
+    } else {
+      currentUrlMovie = trailerUrl;
+    }
+
     notifyListeners();
   }
 
@@ -55,6 +84,7 @@ class MovieProvider extends ChangeNotifier {
           Apis.addDataMovie(item);
           await getMovieDetailApi(item.slug);
         }
+        print(i.toString().toUpperCase());
         // Bạn có thể sử dụng listData ở đây nếu cần
       } else {
         throw Exception('Failed to load movies');

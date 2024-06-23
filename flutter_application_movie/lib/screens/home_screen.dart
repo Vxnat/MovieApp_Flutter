@@ -7,13 +7,7 @@ import 'package:flutter_application_movie/auth/auth_gate.dart';
 import 'package:flutter_application_movie/models/movie_item_detail.dart';
 import 'package:flutter_application_movie/provider/movie_provider.dart';
 import 'package:flutter_application_movie/screens/movie_detail_screen.dart';
-import 'package:flutter_application_movie/screens/movie_type_anime_screen.dart';
-import 'package:flutter_application_movie/screens/movie_type_current_year_screen.dart';
-import 'package:flutter_application_movie/screens/movie_type_family_screen.dart';
-import 'package:flutter_application_movie/screens/movie_type_funny_screen.dart';
-import 'package:flutter_application_movie/screens/movie_type_horrible_screen.dart';
-import 'package:flutter_application_movie/screens/movie_type_movie_screen.dart';
-import 'package:flutter_application_movie/screens/movie_type_trailer_screen.dart';
+import 'package:flutter_application_movie/screens/movie_type_screen.dart';
 import 'package:flutter_application_movie/screens/profile_screen.dart';
 import '../components/search_delegate.dart';
 import '../components/side_bar_menu.dart';
@@ -32,8 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Apis.getSelfInfor();
-    movieProvider.getNameMovieFromApi();
   }
 
   @override
@@ -76,7 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
             //     )),
             IconButton(
                 onPressed: () {
-                  // movieProvider.fetchNewMovies(15, 100);
+                  // movieProvider.fetchNewMovies(1, 5);
+                  Apis.updateCategorySlugs();
                 },
                 icon: const Icon(
                   Icons.notifications,
@@ -246,7 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const MovieTypeMovie(),
+                                  builder: (context) => const TypeOfMovie(
+                                    typeOfMovie: TypeOfFilm.movie,
+                                  ),
                                 ));
                           },
                           child: const Icon(
@@ -331,7 +326,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const MovieTypeAnime(),
+                                  builder: (context) => const TypeOfMovie(
+                                    typeOfMovie: TypeOfFilm.anime,
+                                  ),
                                 ));
                           },
                           child: const Icon(
@@ -380,13 +377,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     idMovie: item.movie.id),
                                           ));
                                     },
-                                    child: Stack(
-                                      children: [
-                                        showImg(
-                                            item.movie.thumbUrl.split('/')[5],
-                                            150,
-                                            350),
-                                      ],
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: const Color.fromARGB(
+                                                        255, 58, 58, 58)
+                                                    .withOpacity(0.5),
+                                                spreadRadius: 1,
+                                                blurRadius: 8)
+                                          ]),
+                                      child: showImg(
+                                          item.movie.thumbUrl.split('/')[5],
+                                          150,
+                                          350),
                                     ),
                                   ),
                                 );
@@ -416,8 +422,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MovieTypeCurrentYear(),
+                                  builder: (context) => const TypeOfMovie(
+                                    typeOfMovie: TypeOfFilm.currentYear,
+                                  ),
                                 ));
                           },
                           child: const Icon(
@@ -502,8 +509,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MovieTypeTrailer(),
+                                  builder: (context) => const TypeOfMovie(
+                                    typeOfMovie: TypeOfFilm.trailer,
+                                  ),
                                 ));
                           },
                           child: const Icon(
@@ -588,8 +596,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MovieTypeHorrible(),
+                                  builder: (context) => const TypeOfMovie(
+                                    typeOfMovie: TypeOfFilm.horrible,
+                                  ),
                                 ));
                           },
                           child: const Icon(
@@ -675,7 +684,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const MovieTypeFamily(),
+                                  builder: (context) => const TypeOfMovie(
+                                    typeOfMovie: TypeOfFilm.family,
+                                  ),
                                 ));
                           },
                           child: const Icon(
@@ -760,7 +771,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const MovieTypeFunny(),
+                                  builder: (context) => const TypeOfMovie(
+                                    typeOfMovie: TypeOfFilm.funny,
+                                  ),
                                 ));
                           },
                           child: const Icon(

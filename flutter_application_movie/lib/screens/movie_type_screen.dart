@@ -1,19 +1,57 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_movie/Apis/apis.dart';
 import 'package:flutter_application_movie/models/movie_item_detail.dart';
+import 'package:flutter_application_movie/provider/movie_provider.dart';
 import 'package:flutter_application_movie/screens/home_screen.dart';
 import 'package:flutter_application_movie/screens/movie_detail_screen.dart';
 
 // ignore: must_be_immutable
-class MovieTypeTrailer extends StatefulWidget {
-  const MovieTypeTrailer({super.key});
+class TypeOfMovie extends StatefulWidget {
+  final TypeOfFilm typeOfMovie;
+  const TypeOfMovie({super.key, required this.typeOfMovie});
 
   @override
-  State<MovieTypeTrailer> createState() => _MovieTypeTrailerState();
+  State<TypeOfMovie> createState() => _TypeOfMovieState();
 }
 
-class _MovieTypeTrailerState extends State<MovieTypeTrailer> {
+class _TypeOfMovieState extends State<TypeOfMovie> {
+  late String title;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> movieStream;
+  @override
+  void initState() {
+    super.initState();
+    switch (widget.typeOfMovie) {
+      case TypeOfFilm.tv:
+        title = 'TV';
+        movieStream = Apis.getDataTvShow(0);
+      case TypeOfFilm.movie:
+        title = "Phim điện ảnh";
+        movieStream = Apis.getDataMovie(0);
+      case TypeOfFilm.anime:
+        title = "Anime đặc sắc";
+        movieStream = Apis.getDataMovieAnime(0);
+      case TypeOfFilm.currentYear:
+        title = "Mới ra mắt";
+        movieStream = Apis.getDataMovieCurrentYear(0);
+      case TypeOfFilm.trailer:
+        title = "Sắp ra mắt";
+        movieStream = Apis.getDataMovieTrailer(0);
+      case TypeOfFilm.horrible:
+        title = "Bí kíp trừ tà";
+        movieStream = Apis.getDataMovieHorrible(0);
+      case TypeOfFilm.family:
+        title = "Phim gia đình";
+        movieStream = Apis.getDataMovieFamily(0);
+      case TypeOfFilm.funny:
+        title = "Giải trí nhẹ nhàng thôi";
+        movieStream = Apis.getDataMovieFunny(0);
+        break;
+      default:
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -23,9 +61,9 @@ class _MovieTypeTrailerState extends State<MovieTypeTrailer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'SẮP PHÁT SÓNG',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          title.toUpperCase(),
+          style: const TextStyle(color: Colors.white),
         ),
         leading: IconButton(
           onPressed: () {
@@ -44,7 +82,7 @@ class _MovieTypeTrailerState extends State<MovieTypeTrailer> {
         decoration: const BoxDecoration(color: Color.fromARGB(226, 0, 0, 0)),
         height: MediaQuery.of(context).size.height,
         child: StreamBuilder(
-          stream: Apis.getDataMovieTrailer(0),
+          stream: movieStream,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:

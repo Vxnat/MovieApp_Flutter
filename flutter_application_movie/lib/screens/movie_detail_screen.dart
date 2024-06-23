@@ -4,6 +4,7 @@ import 'package:flutter_application_movie/Apis/apis.dart';
 import 'package:flutter_application_movie/auth/auth_gate.dart';
 import 'package:flutter_application_movie/models/movie_item_detail.dart';
 import 'package:like_button/like_button.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../provider/movie_provider.dart';
@@ -22,10 +23,8 @@ class MovieDetailScreen extends StatefulWidget {
 }
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
-  String currentSelectedMovie = '';
-  String currentUrlMovie = '';
   MovieProvider movieProvider = MovieProvider();
-  var snackBar = const SnackBar(
+  var chooseEpisodeFilm = const SnackBar(
     content: Text('Vui lòng chọn tập phim !'),
     duration: Duration(seconds: 2),
   );
@@ -40,8 +39,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void dispose() {
     super.dispose();
-    currentSelectedMovie = '';
-    currentUrlMovie = '';
+    movieProvider.currentUrlMovie = '';
+    movieProvider.currentSelectedIndex = -1;
   }
 
   Future<void> _confirmAndLaunchUrl(
@@ -72,7 +71,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         _launchUrl(currentUrlMovie);
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(chooseEpisodeFilm);
     }
   }
 
@@ -211,8 +210,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                       if (snapshot.hasData) {
                                         return GestureDetector(
                                           onTap: () {
-                                            _confirmAndLaunchUrl(
-                                                context, currentUrlMovie);
+                                            _confirmAndLaunchUrl(context,
+                                                movieProvider.currentUrlMovie);
                                           },
                                           child: Container(
                                             margin: const EdgeInsets.only(
@@ -409,110 +408,74 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  SingleChildScrollView(
-                                    child: SizedBox(
-                                      height: 100,
-                                      child: GridView.builder(
-                                        shrinkWrap: true,
-                                        physics: const ClampingScrollPhysics(),
-                                        gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount:
-                                                    7, // Số lượng cột
-                                                childAspectRatio: 4 /
-                                                    2, // Tỉ lệ khung hình của mỗi item
-                                                crossAxisSpacing: 10,
-                                                mainAxisSpacing: 10),
-                                        itemCount: item
-                                            .episodes.first.serverData.length,
-                                        itemBuilder: (context, index) {
-                                          final listEpisodes =
-                                              item.episodes.first.serverData;
-                                          final itemEpisode =
-                                              listEpisodes[index];
-                                          if (listEpisodes.length == 1 &&
-                                              item.movie.status != 'trailer') {
-                                            currentSelectedMovie = 'Full';
-                                            currentUrlMovie = item
-                                                .episodes
-                                                .first
-                                                .serverData
-                                                .first
-                                                .linkEmbed;
-                                          } else if (item.movie.status ==
-                                              'trailer') {
-                                            currentSelectedMovie = 'trailer';
-                                            currentUrlMovie =
-                                                item.movie.trailerUrl;
-                                          }
-                                          return GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                if (item.movie.status !=
-                                                        'trailer' &&
-                                                    listEpisodes.length > 1) {
-                                                  currentSelectedMovie =
-                                                      itemEpisode.name;
-                                                  currentUrlMovie =
-                                                      itemEpisode.linkEmbed;
-                                                } else if (listEpisodes
-                                                            .length ==
-                                                        1 &&
-                                                    item.movie.status !=
-                                                        'trailer') {
-                                                  currentSelectedMovie ==
-                                                      'Full';
-                                                  currentUrlMovie = item
-                                                      .episodes
-                                                      .first
-                                                      .serverData
-                                                      .first
-                                                      .linkEmbed;
-                                                } else {
-                                                  currentSelectedMovie =
-                                                      'trailer';
-                                                  currentUrlMovie =
-                                                      item.movie.trailerUrl;
-                                                }
-                                              });
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: itemEpisode.name ==
-                                                              currentSelectedMovie ||
-                                                          currentSelectedMovie ==
-                                                              'Full' ||
-                                                          currentSelectedMovie ==
-                                                              'trailer'
-                                                      ? Colors.white
-                                                      : Colors.black54,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                              child: Center(
-                                                child: Text(
-                                                  item.movie.status == 'trailer'
-                                                      ? 'Trailer'
-                                                      : listEpisodes.length == 1
-                                                          ? 'Full'
-                                                          : itemEpisode.name,
-                                                  style: TextStyle(
-                                                      color: itemEpisode.name ==
-                                                                  currentSelectedMovie ||
-                                                              currentSelectedMovie ==
-                                                                  'trailer' ||
-                                                              currentSelectedMovie ==
-                                                                  'Full'
-                                                          ? Colors.black
-                                                          : Colors.white),
+                                  Consumer<MovieProvider>(
+                                    builder: (context, value, child) {
+                                      return SingleChildScrollView(
+                                        child: SizedBox(
+                                          height: 100,
+                                          child: GridView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const ClampingScrollPhysics(),
+                                            gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount:
+                                                        7, // Số lượng cột
+                                                    childAspectRatio: 4 /
+                                                        2, // Tỉ lệ khung hình của mỗi item
+                                                    crossAxisSpacing: 10,
+                                                    mainAxisSpacing: 10),
+                                            itemCount: item.episodes.first
+                                                .serverData.length,
+                                            itemBuilder: (context, index) {
+                                              // Danh sach cac tap phim
+                                              final listEpisodes = item
+                                                  .episodes.first.serverData;
+                                              // Tap phim
+                                              final itemEpisode =
+                                                  listEpisodes[index];
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  value.setCurrentUrlMovie(
+                                                      itemEpisode.linkEmbed,
+                                                      item.movie.trailerUrl);
+                                                  value.toggleColor(index);
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color:
+                                                          value.currentSelectedIndex ==
+                                                                  index
+                                                              ? Colors.white
+                                                              : Colors.black54,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                  child: Center(
+                                                    child: Text(
+                                                      itemEpisode.name != ''
+                                                          ? itemEpisode.name
+                                                          : item.movie.trailerUrl !=
+                                                                  ''
+                                                              ? 'Trailer'
+                                                              : '',
+                                                      style: TextStyle(
+                                                          color:
+                                                              value.currentSelectedIndex ==
+                                                                      index
+                                                                  ? Colors.black
+                                                                  : Colors
+                                                                      .white),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
                                 ],
                               ),
                             ),

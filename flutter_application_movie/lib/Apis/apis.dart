@@ -24,21 +24,21 @@ class Apis {
   //   });
   // }
 
-  // static Future<void> updateCategorySlugs() async {
-  //   final firestore = FirebaseFirestore.instance;
-  //   final collection = firestore.collection('movies_detail');
-  //   final snapshot = await collection.get();
+  static Future<void> updateCategorySlugs() async {
+    final firestore = FirebaseFirestore.instance;
+    final collection = firestore.collection('movies_detail');
+    final snapshot = await collection.get();
 
-  //   for (var doc in snapshot.docs) {
-  //     List<dynamic> categories = doc.data()['movie']['category'];
-  //     List<String> slugs =
-  //         categories.map((category) => category['slug'].toString()).toList();
+    for (var doc in snapshot.docs) {
+      List<dynamic> categories = doc.data()['movie']['category'];
+      List<String> slugs =
+          categories.map((category) => category['slug'].toString()).toList();
 
-  //     await doc.reference.update({
-  //       'movie.category_slugs': slugs,
-  //     });
-  //   }
-  // }
+      await doc.reference.update({
+        'movie.category_slugs': slugs,
+      });
+    }
+  }
 
   static Future<void> addDataMovie(MovieItem movieItem) async {
     try {
